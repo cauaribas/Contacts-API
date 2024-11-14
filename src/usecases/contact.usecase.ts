@@ -1,5 +1,5 @@
 import { Contacts } from "@prisma/client";
-import { ContactCreate, ContactsRepository } from "../interfaces/contacts.interface";
+import { Contact, ContactCreate, ContactsRepository } from "../interfaces/contacts.interface";
 import { ContactsPrismaRepository } from "../repositories/contacts.repository";
 import { UserPrismaRepository } from "../repositories/user.repository";
 import { UserRepository } from "../interfaces/user.interface";
@@ -45,5 +45,17 @@ export class ContactUseCase {
         const contacts = await this.contactRepository.findAllContacts(user.id);
 
         return contacts;
+    }
+
+    async updateContact({ id, name, email, phone }: Contact): Promise<Contacts> {
+        const data = await this.contactRepository.updateContact({ id, name, email, phone });
+
+        return data;
+    }
+
+    async deleteContact(id: string): Promise<Contacts> {
+        const contact = await this.contactRepository.deleteContact(id);
+
+        return contact;
     }
 }
