@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { ContactCreate } from "../interfaces/contacts.interface";
+import { Contact, ContactCreate } from "../interfaces/contacts.interface";
 import { ContactUseCase } from "../usecases/contact.usecase";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
@@ -34,6 +34,37 @@ export async function contactsRoutes(fastify: FastifyInstance) {
             const contacts = await contactUseCase.listAllContacts(userEmail);
 
             reply.send(contacts);
+        } catch (error) {
+            reply.send(error);
+        }
+    });
+
+    fastify.put<{ Body: ContactCreate, Params: { id: string } }>("/:id", async (request, reply) => {
+        const { id } = request.params;
+
+        const { name, email, phone } = request.body;
+
+        try {
+            const data = await contactUseCase.updateContact({
+                id: id,
+                name: name,
+                email: email,
+                phone: phone
+            });    
+
+            reply.send(data);
+        } catch (error) {
+            reply.send(error);
+        }
+    });
+
+    fastify.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
+        const { id } = request.params;
+
+        try {
+            await contactUseCase.deleteContact(id);
+
+            reply.send({ message: "Contact deleted" });
         } catch (error) {
             reply.send(error);
         }
